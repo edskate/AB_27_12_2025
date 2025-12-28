@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação</title>
+
+<style>
+    body{
+        font-family: "Segoe UI", Arial, sans-serif;
+        background:#111;
+        padding:20px;
+        color:#fff;
+    }
+
+    .table-container{
+        background:#1c1c1c;
+        border-radius:12px;
+        overflow:hidden;
+        box-shadow:0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+    }
+
+    thead{
+        background:linear-gradient(90deg,#cfa34a,#ffd86b);
+        color:#000;
+    }
+
+    th{
+        padding:14px;
+        text-align:left;
+        font-size:14px;
+        letter-spacing:0.5px;
+    }
+
+    td{
+        padding:14px;
+        border-bottom:1px solid #333;
+        font-size:14px;
+    }
+
+    tbody tr{
+        transition:0.3s;
+    }
+
+    tbody tr:hover{
+        background:#262626;
+        transform:scale(1.01);
+    }
+
+    .progress{
+        background:#333;
+        border-radius:20px;
+        overflow:hidden;
+        height:14px;
+    }
+
+    .progress span{
+        display:block;
+        height:100%;
+        background:linear-gradient(90deg,#00ff88,#00cfff);
+        border-radius:20px;
+    }
+
+    .right{
+        text-align:center;
+        font-weight:bold;
+        color:#ffd86b;
+    }
+
+    @media(max-width:768px){
+        th, td{
+            font-size:12px;
+            padding:10px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="table-container">
+<table>
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Organização Figurino</th>
+            <th>Postura</th>
+            <th>Pontualidade</th>
+            <th>Pontos Adquiridos</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>27/12/2025</td>
+
+            <td>
+                80%
+                <div class="progress">
+                    <span style="width:80%"></span>
+                </div>
+            </td>
+
+            <td>
+                70%
+                <div class="progress">
+                    <span style="width:70%"></span>
+                </div>
+            </td>
+
+            <td>
+                100%
+                <div class="progress">
+                    <span style="width:100%"></span>
+                </div>
+            </td>
+
+            <td class="right">20%</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+</body>
+</html>

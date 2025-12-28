@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação – Show da Tarde</title>
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    background:#0e0e0e;
+    color:#fff;
+    padding:15px;
+}
+
+header{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.clock{
+    font-size:22px;
+    font-weight:bold;
+    color:#ffd86b;
+}
+
+.date{
+    font-size:14px;
+    color:#bbb;
+}
+
+.showtime{
+    margin-top:6px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.showtime span{
+    color:#00cfff;
+}
+
+.container{
+    background:#1c1c1c;
+    border-radius:12px;
+    padding:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+input{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    margin-bottom:15px;
+    font-size:14px;
+}
+
+.row{
+    margin-bottom:15px;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.progress{
+    background:#333;
+    height:14px;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:6px;
+}
+
+.progress span{
+    display:block;
+    height:100%;
+    transition:0.3s;
+}
+
+.green{background:#00ff88;}
+.yellow{background:#ffd86b;}
+.red{background:#ff5555;}
+
+.controls button{
+    margin-top:6px;
+    padding:4px 10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    background:#ffd86b;
+    font-weight:bold;
+}
+
+.status{
+    margin-top:15px;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.actions button{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    background:#ffd86b;
+}
+
+@media(max-width:600px){
+    body{padding:10px;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="clock" id="clock"></div>
+    <div class="date" id="date"></div>
+    <div class="showtime" id="showStatus"></div>
+</header>
+
+<div class="container">
+
+<input type="text" id="nome" placeholder="Nome do dançarino">
+
+<!-- Horário do Show -->
+<div class="row">
+    <div class="label">🎭 Horário do show (tarde)</div>
+    <input type="time" id="showTime" value="15:00">
+</div>
+
+<div class="row">
+    <div class="label">Organização Figurino: <span id="fVal">80%</span></div>
+    <div class="progress"><span id="fBar"></span></div>
+    <div class="controls">
+        <button onclick="change('f',10)">+</button>
+        <button onclick="change('f',-10)">-</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="label">Postura: <span id="pVal">70%</span></div>
+    <div class="progress"><span id="pBar"></span></div>
+    <div class="controls">
+        <button onclick="change('p',10)">+</button>
+        <button onclick="change('p',-10)">-</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="label">Pontualidade: <span id="tVal">100%</span></div>
+    <div class="progress"><span id="tBar"></span></div>
+    <div class="controls">
+        <button onclick="change('t',10)">+</button>
+        <button onclick="change('t',-10)">-</button>
+    </div>
+</div>
+
+<div class="status" id="media"></div>
+
+<div class="actions">
+    <button onclick="save()">💾 Salvar</button>
+    <button onclick="window.print()">📄 Exportar PDF</button>
+</div>
+
+</div>
+
+<script>
+let values = { f:80, p:70, t:100 };
+
+function render(){
+    let total = 0;
+    Object.keys(values).forEach(k=>{
+        let v = values[k];
+        total += v;
+
+        let bar = document.getElementById(k+"Bar");
+        bar.style.width = v+"%";
+        bar.className = v>=80?"green":v>=50?"yellow":"red";
+
+        document.getElementById(k+"Val").innerText = v+"%";
+    });
+
+    let avg = Math.round(total / 3);
+    let status = avg>=80 ? "🟢 Excelente" :
+                 avg>=50 ? "🟡 Atenção" :
+                           "🔴 Crítico";
+
+    document.getElementById("media").innerText =
+        "Média Geral: " + avg + "% | " + status;
+
+    localStorage.setItem("avaliacao", JSON.stringify({
+        nome: document.getElementById("nome").value,
+        values: values,
+        showTime: document.getElementById("showTime").value
+    }));
+}
+
+function change(id, val){
+    values[id] += val;
+    if(values[id] > 100) values[id] = 100;
+    if(values[id] < 0) values[id] = 0;
+    render();
+}
+
+function save(){
+    alert("Avaliação salva no navegador ✔");
+}
+
+function load(){
+    let data = localStorage.getItem("avaliacao");
+    if(data){
+        data = JSON.parse(data);
+        values = data.values || values;
+        document.getElementById("nome").value = data.nome || "";
+        document.getElementById("showTime").value = data.showTime || "15:00";
+    }
+    render();
+}
+
+function updateClock(){
+    const now = new Date();
+
+    const hora = now.toLocaleTimeString("pt-BR");
+    const data = now.toLocaleDateString("pt-BR",{
+        day:"2-digit",
+        month:"long",
+        year:"numeric"
+    });
+
+    document.getElementById("clock").innerText = hora;
+    document.getElementById("date").innerText = data;
+
+    updateShowStatus(now);
+}
+
+function updateShowStatus(now){
+    const showInput = document.getElementById("showTime").value;
+    if(!showInput) return;
+
+    const [h,m] = showInput.split(":");
+    const show = new Date();
+    show.setHours(h,m,0,0);
+
+    let status = "";
+    if(now < show){
+        status = "⏳ ANTES DO SHOW – início às " + showInput;
+    }else if(now.getTime() - show.getTime() < 60*60*1000){
+        status = "🎤 SHOW EM ANDAMENTO";
+    }else{
+        status = "✅ SHOW FINALIZADO";
+    }
+
+    document.getElementById("showStatus").innerHTML =
+        '🎭 Show da tarde: <span>' + status + '</span>';
+}
+
+setInterval(updateClock,1000);
+updateClock();
+load();
+</script>
+
+</body>
+</html>

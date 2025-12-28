@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação Elenco</title>
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    background:#0e0e0e;
+    color:#fff;
+    padding:15px;
+}
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.clock{
+    font-size:18px;
+    font-weight:bold;
+    color:#ffd86b;
+}
+
+input{
+    padding:8px;
+    border-radius:6px;
+    border:none;
+    width:100%;
+    margin-bottom:10px;
+}
+
+.container{
+    background:#1c1c1c;
+    border-radius:12px;
+    padding:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+.row{
+    margin-bottom:15px;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.progress{
+    background:#333;
+    height:14px;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:5px;
+}
+
+.progress span{
+    display:block;
+    height:100%;
+    transition:0.3s;
+}
+
+.green{background:#00ff88;}
+.yellow{background:#ffd86b;}
+.red{background:#ff5555;}
+
+.controls button{
+    margin-top:5px;
+    padding:4px 10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    background:#ffd86b;
+    font-weight:bold;
+}
+
+.controls button:hover{
+    background:#cfa34a;
+}
+
+.status{
+    font-size:16px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.actions{
+    margin-top:15px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.actions button{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    background:#ffd86b;
+}
+
+@media(max-width:600px){
+    body{padding:10px;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="clock" id="clock"></div>
+</header>
+
+<div class="container">
+
+<input type="text" id="nome" placeholder="Nome do dançarino">
+
+<div class="row">
+<div class="label">Organização Figurino: <span id="fVal">80%</span></div>
+<div class="progress"><span id="fBar"></span></div>
+<div class="controls">
+<button onclick="change('f',10)">+</button>
+<button onclick="change('f',-10)">-</button>
+</div>
+
+</div>
+
+<div class="row">
+<div class="label">Postura: <span id="pVal">70%</span></div>
+<div class="progress"><span id="pBar"></span></div>
+<div class="controls">
+<button onclick="change('p',10)">+</button>
+<button onclick="change('p',-10)">-</button>
+</div>
+</div>
+
+<div class="row">
+<div class="label">Pontualidade: <span id="tVal">100%</span></div>
+<div class="progress"><span id="tBar"></span></div>
+<div class="controls">
+<button onclick="change('t',10)">+</button>
+<button onclick="change('t',-10)">-</button>
+</div>
+</div>
+
+<div class="status" id="media"></div>
+
+<div class="actions">
+<button onclick="save()">💾 Salvar</button>
+<button onclick="window.print()">📄 Exportar PDF</button>
+</div>
+
+</div>
+
+<script>
+let values = {f:80,p:70,t:100};
+
+function render(){
+    let total = 0;
+    Object.keys(values).forEach(k=>{
+        let v = values[k];
+        total += v;
+        let bar = document.getElementById(k+"Bar");
+        bar.style.width = v+"%";
+        bar.className = v>=80?"green":v>=50?"yellow":"red";
+        document.getElementById(k+"Val").innerText = v+"%";
+    });
+
+    let avg = Math.round(total/3);
+    let status = avg>=80?"🟢 Excelente":avg>=50?"🟡 Atenção":"🔴 Crítico";
+    document.getElementById("media").innerText =
+        "Média Geral: "+avg+"% | "+status;
+
+    localStorage.setItem("avaliacao",JSON.stringify({
+        nome:document.getElementById("nome").value,
+        values
+    }));
+}
+
+function change(id,val){
+    values[id]+=val;
+    if(values[id]>100) values[id]=100;
+    if(values[id]<0) values[id]=0;
+    render();
+}
+
+function save(){ alert("Avaliação salva no navegador ✔"); }
+
+function load(){
+    let data = localStorage.getItem("avaliacao");
+    if(data){
+        data = JSON.parse(data);
+        values = data.values;
+        document.getElementById("nome").value = data.nome || "";
+    }
+    render();
+}
+
+function clock(){
+    let d = new Date();
+    document.getElementById("clock").innerText =
+        d.toLocaleTimeString("pt-BR");
+}
+
+setInterval(clock,1000);
+load();
+</script>
+
+</body>
+</html>
